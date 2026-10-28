@@ -127,6 +127,7 @@ function owned(){let t=[];CFG.stages.forEach((s,i)=>{if(st.unlocked.includes(i))
 function hasLantern(){return CFG.stages.some((s,i)=>s.lantern&&st.unlocked.includes(i))}
 function img(k){const e=document.createElement('img');e.className='tile';e.draggable=false;e.dataset.k=k;e.src='t/'+IDS[k]+(st.lit?'l':'')+'.webp';e.alt='';bind(e);return e}
 function render(){
+  document.querySelectorAll('.drag').forEach(x=>x.remove());
   document.body.classList.toggle('lit',st.lit);$('lantern').style.display=hasLantern()?'inline-block':'none';
   $('shA').style.backgroundImage=`url(shieldA${st.lit?'l':''}.webp)`;$('shB').style.backgroundImage=`url(shieldB${st.lit?'l':''}.webp)`;
   for(const s of 'AB'){const g=$('g'+s);g.innerHTML='';for(let i=0;i<25;i++){const d=document.createElement('div');d.className='slot';d.dataset.slot=s+i;
@@ -143,8 +144,11 @@ function bind(e){let sx,sy,moved=false,ghost=null;
   e.addEventListener('pointermove',ev=>{if(!e.hasPointerCapture(ev.pointerId))return;
     if(!moved&&Math.hypot(ev.clientX-sx,ev.clientY-sy)>6){moved=true;const r=e.getBoundingClientRect();ghost=e.cloneNode();ghost.classList.add('drag');ghost.style.width=r.width+'px';ghost.style.height=r.height+'px';document.body.appendChild(ghost);e.style.opacity=.3}
     if(ghost){ghost.style.left=ev.clientX-ghost.offsetWidth/2+'px';ghost.style.top=ev.clientY-ghost.offsetHeight/2+'px'}});
+  const cancel=()=>{if(ghost){ghost.remove();ghost=null}e.style.opacity=1};
+  e.addEventListener('pointercancel',()=>{cancel();render()});
+  e.addEventListener('lostpointercapture',()=>{if(ghost){cancel();render()}});
   e.addEventListener('pointerup',ev=>{const k=e.dataset.k;
-    if(ghost){ghost.remove();ghost=null;e.style.opacity=1;const t=document.elementFromPoint(ev.clientX,ev.clientY);
+    if(ghost){const t=(ghost.remove(),ghost=null,e.style.opacity=1,document.elementFromPoint(ev.clientX,ev.clientY));
       const slot=t&&t.closest('.slot');if(slot)put(k,slot.dataset.slot);else if(t&&t.closest('#tray'))put(k,null);else render();return}
     ev.stopPropagation();
     if(sel===k){sel=null;render();return}
