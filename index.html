@@ -1,0 +1,164 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Shield Wall</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1d1a17;--ink:#eadfc8;--muted:#a8997c;--gold:#c9a25a;--panel:#2a2520}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'EB Garamond',Georgia,serif}
+body{background:#1d1a17 radial-gradient(ellipse at 50% 0,#2e2924,#1d1a17 70%);min-height:100vh;transition:background .6s}
+body.lit{background:#0b1020 radial-gradient(ellipse at 50% 0,#1b2a4a,#0b1020 70%)}
+header{text-align:center;padding:18px 16px 6px}h1{font-weight:400;letter-spacing:.06em;margin:0;font-size:clamp(26px,6vw,40px)}
+.sub{color:var(--muted);font-style:italic;margin-top:4px}
+.bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:10px 16px}
+input{font:inherit;font-size:18px;padding:8px 12px;border-radius:6px;border:1px solid #6b5a3e;background:#14110e;color:var(--ink);width:min(260px,60vw);text-transform:uppercase}
+button{font:inherit;font-size:17px;padding:8px 14px;border-radius:6px;border:1px solid #8a6c3a;background:#3a2e20;color:var(--ink);cursor:pointer}
+button:active{transform:translateY(1px)}#lantern{display:none;background:#1f3357;border-color:#6f9fd0}
+body.lit #lantern{background:#6f9fd0;color:#0b1020}
+#msg{text-align:center;min-height:1.4em;color:var(--gold);padding:0 16px}
+.wall{display:flex;gap:4vw;justify-content:center;align-items:flex-start;padding:10px 16px;flex-wrap:wrap}
+.shield{position:relative;width:min(44vw,460px);aspect-ratio:696/866;background-size:100% 100%}
+@media (max-width:700px){.shield{width:min(92vw,460px)}}
+.grid{position:absolute;left:6.897%;top:5.543%;width:86.207%;aspect-ratio:1;display:grid;grid-template-columns:repeat(5,1fr);gap:0}
+.slot{position:relative;aspect-ratio:1;outline:1px solid rgba(0,0,0,.35)}
+.slot.sel{outline:2px solid var(--gold);z-index:2}
+.tile{width:100%;height:100%;display:block;touch-action:none;user-select:none;-webkit-user-drag:none;cursor:grab}
+.tile.sel{outline:3px solid var(--gold);outline-offset:-3px}
+h2{font-weight:400;text-align:center;margin:18px 0 4px;font-size:22px}
+#tray{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;padding:8px 16px 30px;max-width:900px;margin:0 auto;min-height:80px}
+#tray .tile{aspect-ratio:1;height:auto;border-radius:3px;box-shadow:0 2px 6px #0008}
+.drag{position:fixed;pointer-events:none;z-index:50;opacity:.9;box-shadow:0 6px 18px #000a}
+#done{display:none;text-align:center;font-size:20px;color:#cfe8ff;padding:10px 16px}
+footer{text-align:center;color:var(--muted);font-size:14px;padding:0 16px 24px}
+footer button{font-size:14px;padding:4px 10px;background:transparent}
+</style></head><body>
+<header><h1>The Shield Wall</h1><div class="sub">Two shields. Fifty tiles. Only one way they fit.</div></header>
+<div class="bar"><input id="pw" placeholder="Password" autocomplete="off" autocapitalize="characters"><button id="go">Unlock</button><button id="lantern">Moonlight lantern</button></div>
+<div id="msg"></div>
+<div class="wall"><div class="shield" id="shA"><div class="grid" id="gA"></div></div><div class="shield" id="shB"><div class="grid" id="gB"></div></div></div>
+<div id="done"></div>
+<h2>Your tiles</h2><div id="tray"></div>
+<footer>Drag a tile onto a shield, or tap a tile and then tap a square. Drag it back down to the tiles to remove it.<br><br><button id="reset">Clear the wall</button></footer>
+<script>
+const CFG={
+ "stages": [
+  {
+   "name": "The Raven Job",
+   "password": "BLACKFEATHER",
+   "tiles": [
+    4,
+    5,
+    7,
+    8,
+    17,
+    19,
+    26,
+    27,
+    32,
+    33,
+    37,
+    48
+   ]
+  },
+  {
+   "name": "The Search of the Catacombs",
+   "password": "RESTLESSBONES",
+   "tiles": [
+    1,
+    2,
+    14,
+    15,
+    16,
+    18,
+    21,
+    24,
+    28,
+    38,
+    44,
+    45,
+    47,
+    50
+   ]
+  },
+  {
+   "name": "The Rescue of Lilith",
+   "password": "SILVERPEARL",
+   "tiles": [
+    6,
+    9,
+    10,
+    23,
+    29,
+    30,
+    31,
+    34,
+    35,
+    36,
+    39,
+    41,
+    42,
+    43
+   ]
+  },
+  {
+   "name": "Lysander's Hut",
+   "password": "MOONWILLOW",
+   "tiles": [
+    3,
+    11,
+    12,
+    13,
+    20,
+    22,
+    25,
+    40,
+    46,
+    49
+   ],
+   "lantern": true
+  }
+ ],
+ "solved": "The shields blaze with moonlight. Deep inside the wall, something heavy turns and unlocks."
+};const IDS={"1": "992ed5792e", "2": "0052fdd94a", "3": "031c293b2e", "4": "f21c399cac", "5": "5140e22c30", "6": "4da5b5c53f", "7": "f1c628a1cc", "8": "647c07e8d0", "9": "ccd10d0ecf", "10": "48bf2b4e0b", "11": "d56ae693d7", "12": "1e5e6ec768", "13": "9352c4325f", "14": "5a6d253fee", "15": "c871b290c8", "16": "0bba03c896", "17": "2ceb1c71bf", "18": "1eb548d2e8", "19": "285a03eb83", "20": "bcd3659ea2", "21": "ef72b6da0e", "22": "0bb93d354a", "23": "fe862dfd2f", "24": "3f09b160a7", "25": "ae7cbd95ba", "26": "0476953f1b", "27": "830c46d44a", "28": "3fc943e08a", "29": "ad44eb0ad7", "30": "75abbd2a44", "31": "e4203ed658", "32": "ad0c42b3a5", "33": "5dc627885e", "34": "ee791c289d", "35": "250349047b", "36": "bf2410f210", "37": "4c631070ce", "38": "565d81223a", "39": "3c199d5a49", "40": "7063387b21", "41": "151ab80e3f", "42": "d7052cb816", "43": "f2d3ad8084", "44": "6910fff3af", "45": "b9cbff9f58", "46": "17963a0aac", "47": "e2e0e51d0e", "48": "b6e236fa1e", "49": "5b05b355b5", "50": "5b33781bc6"};
+const norm=s=>s.toUpperCase().replace(/[^A-Z0-9]/g,'');
+let st={unlocked:[],place:{},lit:false};
+try{const s=JSON.parse(localStorage.getItem('shieldwall')||'null');if(s)st=Object.assign(st,s)}catch(e){}
+const save=()=>{try{localStorage.setItem('shieldwall',JSON.stringify(st))}catch(e){}};
+const $=id=>document.getElementById(id);let sel=null;
+function owned(){let t=[];CFG.stages.forEach((s,i)=>{if(st.unlocked.includes(i))t=t.concat(s.tiles)});return t}
+function hasLantern(){return CFG.stages.some((s,i)=>s.lantern&&st.unlocked.includes(i))}
+function img(k){const e=document.createElement('img');e.className='tile';e.draggable=false;e.dataset.k=k;e.src='t/'+IDS[k]+(st.lit?'l':'')+'.webp';e.alt='';bind(e);return e}
+function render(){
+  document.body.classList.toggle('lit',st.lit);$('lantern').style.display=hasLantern()?'inline-block':'none';
+  $('shA').style.backgroundImage=`url(shieldA${st.lit?'l':''}.webp)`;$('shB').style.backgroundImage=`url(shieldB${st.lit?'l':''}.webp)`;
+  for(const s of 'AB'){const g=$('g'+s);g.innerHTML='';for(let i=0;i<25;i++){const d=document.createElement('div');d.className='slot';d.dataset.slot=s+i;
+    const k=Object.keys(st.place).find(k=>st.place[k]===s+i);if(k&&owned().includes(+k))d.appendChild(img(k));
+    d.onclick=()=>{if(sel){put(sel,s+i)}};g.appendChild(d)}}
+  const tr=$('tray');tr.innerHTML='';owned().filter(k=>!st.place[k]).sort((a,b)=>IDS[a]<IDS[b]?-1:1).forEach(k=>tr.appendChild(img(k)));
+  const all=owned().length===50&&Array.from({length:50},(_,i)=>i+1).every(k=>st.place[k]===(k<=25?'A':'B')+((k-1)%25));
+  $('done').style.display=all?'block':'none';$('done').textContent=all?CFG.solved:'';
+}
+function put(k,slot){for(const o in st.place)if(st.place[o]===slot&&o!=k)delete st.place[o];
+  if(slot)st.place[k]=slot;else delete st.place[k];sel=null;save();render()}
+function bind(e){let sx,sy,moved=false,ghost=null;
+  e.addEventListener('pointerdown',ev=>{ev.preventDefault();sx=ev.clientX;sy=ev.clientY;moved=false;e.setPointerCapture(ev.pointerId)});
+  e.addEventListener('pointermove',ev=>{if(!e.hasPointerCapture(ev.pointerId))return;
+    if(!moved&&Math.hypot(ev.clientX-sx,ev.clientY-sy)>6){moved=true;const r=e.getBoundingClientRect();ghost=e.cloneNode();ghost.classList.add('drag');ghost.style.width=r.width+'px';ghost.style.height=r.height+'px';document.body.appendChild(ghost);e.style.opacity=.3}
+    if(ghost){ghost.style.left=ev.clientX-ghost.offsetWidth/2+'px';ghost.style.top=ev.clientY-ghost.offsetHeight/2+'px'}});
+  e.addEventListener('pointerup',ev=>{const k=e.dataset.k;
+    if(ghost){ghost.remove();ghost=null;e.style.opacity=1;const t=document.elementFromPoint(ev.clientX,ev.clientY);
+      const slot=t&&t.closest('.slot');if(slot)put(k,slot.dataset.slot);else if(t&&t.closest('#tray'))put(k,null);else render();return}
+    ev.stopPropagation();
+    if(sel===k){sel=null;render();return}
+    if(sel&&e.parentElement.classList.contains('slot')){put(sel,e.parentElement.dataset.slot);return}
+    sel=k;document.querySelectorAll('.tile.sel').forEach(x=>x.classList.remove('sel'));e.classList.add('sel')});
+}
+$('tray').addEventListener('click',ev=>{if(sel&&ev.target.id==='tray')put(sel,null)});
+function unlock(){const p=norm($('pw').value);const i=CFG.stages.findIndex(s=>norm(s.password)===p);
+  if(i<0){$('msg').textContent='Nothing happens.';return}
+  if(st.unlocked.includes(i)){$('msg').textContent='You already hold those tiles.';return}
+  st.unlocked.push(i);save();$('pw').value='';
+  const s=CFG.stages[i];$('msg').textContent=`${s.name}: ${s.tiles.length} tiles added.`+(s.lantern?' A moonlight lantern flickers into your hands.':'');render()}
+$('go').onclick=unlock;$('pw').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});
+$('lantern').onclick=()=>{st.lit=!st.lit;save();render()};
+$('reset').onclick=()=>{st.place={};save();render()};
+render();
+</script></body></html>
