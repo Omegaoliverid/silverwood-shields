@@ -33,8 +33,8 @@ header,.bar,#msg,h2,#done,footer{text-shadow:0 1px 3px #000,0 0 14px #000}
 
 #ws{display:none;max-width:640px;margin:10px auto 20px;padding:14px 16px;background:rgba(12,14,22,.82);border:1px solid #8a6c3a;border-radius:10px;text-align:center}
 #ws h2{margin:4px 0 6px}#ws .hint{font-style:italic;color:#d8c9a6;margin-bottom:10px}
-#wsg{display:grid;grid-template-columns:repeat(14,1fr);gap:2px;user-select:none;touch-action:manipulation}
-#wsg div{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:clamp(13px,3.6vw,22px);background:rgba(240,228,200,.08);border-radius:4px;cursor:pointer;color:#eadfc8}
+#wsg{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;user-select:none;touch-action:manipulation}
+#wsg div{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:clamp(15px,4.2vw,24px);background:rgba(240,228,200,.08);border-radius:4px;cursor:pointer;color:#eadfc8}
 #wsg div.start{background:#6f9fd0;color:#0b1020}
 #wsg div.god{background:#c9a25a;color:#1a140c;font-weight:600}
 #wsg div.herr{background:rgba(120,110,100,.35);color:#9a8f80}
@@ -48,7 +48,7 @@ footer button{font-size:14px;padding:4px 10px;background:transparent}
 <div class="wall"><div class="shield" id="shA"><div class="grid" id="gA"></div></div><div class="shield" id="shB"><div class="grid" id="gB"></div></div></div>
 <div id="done"></div>
 <div id="ws"><h2>The words in the stone</h2>
-<div class="hint">Five names are carved into the stone: the four the seals hold, and the one who holds them in balance. Tap the first letter of a name, then the last.</div>
+<div class="hint">Five names are carved into the stone: the four the seals hold, and the one who holds them in balance. Names read across, up, down or diagonally, never backwards. Tap the first letter of a name, then the last.</div>
 <div id="wsg"></div><div id="wsmsg"></div><div id="wscount"></div><div id="wsend">The wall grinds aside. A narrow stair leads down into the dark: the way to the Crypt of the Founders.</div></div>
 <h2>Your tiles</h2><div id="tray"></div>
 <footer>Drag a tile onto a seal, or tap a tile and then tap a square. Drag it back down to the tiles to remove it.<br><br><button id="reset">Clear the wall</button></footer>
@@ -180,7 +180,7 @@ $('go').onclick=unlock;$('pw').addEventListener('keydown',e=>{if(e.key==='Enter'
 $('lantern').onclick=()=>{st.lit=!st.lit;save();render()};
 $('reset').onclick=()=>{st.place={};save();render()};
 
-const WS={"grid": ["SIRDLACSNOGARD", "LDALHNEHTARODS", "DONTOSUANREODI", "REDROERYRHYICL", "UMUDORCEPAAIRV", "EOTRILHNDOVLRE", "EOOCRYPTVNRLLR", "ONELANTERNUTYN", "ALAELYNDRAIONS", "YIOESTRYROVRFE", "TGROYCESOAHCNE", "LHODOSDORAVARO", "ETAAVARISANDVC", "DCIIDVCREATION"], "gods": ["ORAVARO", "ELYNDRA", "AVARIS", "CALDRIS", "ORATHEN"], "herrings": ["NHAL", "SYLVARA", "ORDER", "CHAOS", "ENTROPY", "CREATION", "MOONLIGHT", "CRYPT", "DRAGON", "SILVER", "LANTERN", "FOUNDERS"], "place": {"MOONLIGHT": [[4, 1], [5, 1], [6, 1], [7, 1], [8, 1], [9, 1], [10, 1], [11, 1], [12, 1]], "CREATION": [[13, 6], [13, 7], [13, 8], [13, 9], [13, 10], [13, 11], [13, 12], [13, 13]], "FOUNDERS": [[9, 12], [8, 11], [7, 10], [6, 9], [5, 8], [4, 7], [3, 6], [2, 5]], "ORAVARO": [[11, 7], [11, 8], [11, 9], [11, 10], [11, 11], [11, 12], [11, 13]], "ELYNDRA": [[8, 3], [8, 4], [8, 5], [8, 6], [8, 7], [8, 8], [8, 9]], "CALDRIS": [[0, 6], [0, 5], [0, 4], [0, 3], [0, 2], [0, 1], [0, 0]], "ORATHEN": [[1, 11], [1, 10], [1, 9], [1, 8], [1, 7], [1, 6], [1, 5]], "SYLVARA": [[8, 13], [7, 12], [6, 11], [5, 10], [4, 9], [3, 8], [2, 7]], "ENTROPY": [[9, 13], [8, 12], [7, 11], [6, 10], [5, 9], [4, 8], [3, 7]], "LANTERN": [[7, 3], [7, 4], [7, 5], [7, 6], [7, 7], [7, 8], [7, 9]], "AVARIS": [[12, 3], [12, 4], [12, 5], [12, 6], [12, 7], [12, 8]], "DRAGON": [[0, 13], [0, 12], [0, 11], [0, 10], [0, 9], [0, 8]], "SILVER": [[1, 13], [2, 13], [3, 13], [4, 13], [5, 13], [6, 13]], "ORDER": [[3, 4], [3, 3], [3, 2], [3, 1], [3, 0]], "CHAOS": [[10, 11], [10, 10], [10, 9], [10, 8], [10, 7]], "CRYPT": [[6, 3], [6, 4], [6, 5], [6, 6], [6, 7]], "NHAL": [[2, 8], [3, 9], [4, 10], [5, 11]]}};
+const WS={"grid": ["SNIOSTCDOTON", "REEASYEOPAEN", "VDLOROLYTHCH", "OOTOVCRVTRTA", "RARTNCVAAESL", "DVEARCRSCROA", "EAVVVOLDADAR", "RRLORAOSLRHD", "IIIEAARODACN", "DSSCRNSORGCY", "RENTROPYIOUL", "AACUEERCSNLE"], "gods": ["ORAVARO", "ELYNDRA", "AVARIS", "CALDRIS", "ORATHEN"], "herrings": ["NHAL", "SYLVARA", "ORDER", "CHAOS", "ENTROPY", "CRYPT", "DRAGON", "SILVER"], "place": {"ORAVARO": [[3, 1], [4, 2], [5, 3], [6, 4], [7, 5], [8, 6], [9, 7]], "ELYNDRA": [[11, 11], [10, 11], [9, 11], [8, 11], [7, 11], [6, 11], [5, 11]], "CALDRIS": [[5, 8], [6, 8], [7, 8], [8, 8], [9, 8], [10, 8], [11, 8]], "ORATHEN": [[6, 5], [5, 6], [4, 7], [3, 8], [2, 9], [1, 10], [0, 11]], "SYLVARA": [[0, 4], [1, 5], [2, 6], [3, 7], [4, 8], [5, 9], [6, 10]], "ENTROPY": [[10, 1], [10, 2], [10, 3], [10, 4], [10, 5], [10, 6], [10, 7]], "AVARIS": [[4, 1], [5, 1], [6, 1], [7, 1], [8, 1], [9, 1]], "DRAGON": [[6, 9], [7, 9], [8, 9], [9, 9], [10, 9], [11, 9]], "SILVER": [[9, 2], [8, 2], [7, 2], [6, 2], [5, 2], [4, 2]], "ORDER": [[3, 0], [4, 0], [5, 0], [6, 0], [7, 0]], "CHAOS": [[8, 10], [7, 10], [6, 10], [5, 10], [4, 10]], "CRYPT": [[4, 5], [3, 6], [2, 7], [1, 8], [0, 9]], "NHAL": [[1, 11], [2, 11], [3, 11], [4, 11]]}};
 let wsStart=null;
 function wsRender(){
   const solved=$('done').style.display==='block';$('ws').style.display=solved?'block':'none';if(!solved)return;
