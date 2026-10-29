@@ -31,7 +31,11 @@ h2{font-weight:400;text-align:center;margin:18px 0 4px;font-size:22px}
 footer{text-align:center;color:var(--muted);font-size:14px;padding:0 16px 24px}
 header,.bar,#msg,h2,#done,footer{text-shadow:0 1px 3px #000,0 0 14px #000}
 
-#ws{display:none;max-width:640px;margin:10px auto 20px;padding:14px 16px;background:rgba(12,14,22,.82);border:1px solid #8a6c3a;border-radius:10px;text-align:center}
+#wsov{display:none;position:fixed;inset:0;z-index:40;background:rgba(5,7,12,.88);overflow-y:auto;padding:16px}
+#wsov.open{display:block}
+#wsx{float:right;font-size:15px;padding:4px 10px}
+#wsopen{display:none;margin:8px auto 0}
+#ws{display:block;max-width:640px;margin:10px auto 20px;animation:wsin .5s ease-out;padding:14px 16px;background:rgba(14,16,24,.97);border:1px solid #8a6c3a;border-radius:10px;text-align:center}
 #ws h2{margin:4px 0 6px}#ws .hint{font-style:italic;color:#d8c9a6;margin-bottom:10px}
 #wsg{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;user-select:none;touch-action:manipulation}
 #wsg div{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:clamp(15px,4.2vw,24px);background:rgba(240,228,200,.08);border-radius:4px;color:#eadfc8}
@@ -44,6 +48,7 @@ header,.bar,#msg,h2,#done,footer{text-shadow:0 1px 3px #000,0 0 14px #000}
 #wsg div.herr{background:rgba(120,110,100,.35);color:#9a8f80}
 #wsmsg{min-height:1.4em;margin:10px 0 2px;color:#cfe8ff}#wscount{color:#c9a25a}
 #wsend{display:none;font-size:20px;color:#cfe8ff;margin-top:10px}
+@keyframes wsin{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
 footer button{font-size:14px;padding:4px 10px;background:transparent}
 </style></head><body><div id="bg"></div>
 <header><h1>The Shield Wall</h1><div class="sub">Two seals. Fifty tiles. Only one way they fit.</div></header>
@@ -51,9 +56,10 @@ footer button{font-size:14px;padding:4px 10px;background:transparent}
 <div id="msg"></div>
 <div class="wall"><div class="shield" id="shA"><div class="grid" id="gA"></div></div><div class="shield" id="shB"><div class="grid" id="gB"></div></div></div>
 <div id="done"></div>
-<div id="ws"><h2>The words in the stone</h2>
+<div id="wsov"><div id="ws"><button id="wsx">Close</button><h2>The words in the stone</h2>
 <div class="hint">Five names are carved into the stone: the four the seals hold, and the one who holds them in balance. Names read across, up, down or diagonally, never backwards. Speak the names to the wall: write them in the stones below and submit.</div>
-<div id="wsg"></div><div id="wsin"></div><button id="wssub">Speak the names</button><div id="wsmsg"></div><div id="wscount"></div><div id="wsend">The wall grinds aside. A narrow stair leads down into the dark: the way to the Crypt of the Founders.</div></div>
+<div id="wsg"></div><div id="wsin"></div><button id="wssub">Speak the names</button><div id="wsmsg"></div><div id="wscount"></div><div id="wsend">The wall grinds aside. A narrow stair leads down into the dark: the way to the Crypt of the Founders.</div></div></div>
+<div style="text-align:center"><button id="wsopen">Read the words in the stone</button></div>
 <h2>Your tiles</h2><div id="tray"></div>
 <footer>Drag a tile onto a seal, or tap a tile and then tap a square. Drag it back down to the tiles to remove it.<br><br><button id="reset">Clear the wall</button></footer>
 <script>
@@ -189,9 +195,11 @@ const CONSEQ={NHAL:'The Void answers. Cold darkness swallows the light, and the 
  SYLVARA:'Wrong god. Thorny roots crack from the mortar and lash the speaker.',
  ORDER:'Oravaro\'s knot flares white and the wall pushes back.',CHAOS:'Avaris\'s weave flares and the wall pushes back.',ENTROPY:'Caldris\'s knot frays, the stone crumbles under your hands, and the wall pushes back.',
  CRYPT:'The stone stays silent.',DRAGON:'The stone stays silent.',SILVER:'The stone stays silent.'};
-let lanternOut=0;
+let lanternOut=0,wsShown=false;
 function wsRender(){
-  const solved=$('done').style.display==='block';$('ws').style.display=solved?'block':'none';if(!solved)return;
+  const solved=$('done').style.display==='block';$('wsopen').style.display=solved?'inline-block':'none';
+  if(!solved){$('wsov').classList.remove('open');wsShown=false;return}
+  if(!wsShown&&!st.wsClosed){$('wsov').classList.add('open');wsShown=true}
   st.ws=(st.ws||[]).filter(w=>WS.gods.includes(w));
   const g=$('wsg');g.innerHTML='';WS.grid.forEach(row=>[...row].forEach(ch=>{const d=document.createElement('div');d.textContent=ch;g.appendChild(d)}));
   const box=$('wsin');const keep=[...box.querySelectorAll('input')].map(i=>i.disabled?'':i.value);box.innerHTML='';
@@ -212,5 +220,7 @@ function wsSubmit(){
   save();$('wsmsg').innerHTML=msgs.map(m=>`<div>${m.replace(/</g,'&lt;')}</div>`).join('');wsRender();
 }
 $('wssub').onclick=wsSubmit;
+$('wsx').onclick=()=>{$('wsov').classList.remove('open');st.wsClosed=true;save()};
+$('wsopen').onclick=()=>{$('wsov').classList.add('open')};
 render();wsRender();
 </script></body></html>
