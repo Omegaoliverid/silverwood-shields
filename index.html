@@ -3,9 +3,10 @@
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#1d1a17;--ink:#eadfc8;--muted:#a8997c;--gold:#c9a25a;--panel:#2a2520}
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'EB Garamond',Georgia,serif}
-body{background:#1d1a17 radial-gradient(ellipse at 50% 0,#2e2924,#1d1a17 70%);min-height:100vh;transition:background .6s}
-body.lit{background:#0b1020 radial-gradient(ellipse at 50% 0,#1b2a4a,#0b1020 70%)}
+*{box-sizing:border-box}html{background:#12141c}html,body{margin:0;color:var(--ink);font-family:'EB Garamond',Georgia,serif}
+body{background:transparent;min-height:100vh}
+#bg{position:fixed;inset:0;z-index:-1;background:linear-gradient(rgba(14,14,20,.15),rgba(10,10,16,.55)),url(mural.webp) center/cover no-repeat;transition:filter .6s}
+body.lit #bg{filter:brightness(.6) saturate(.8)}
 header{text-align:center;padding:18px 16px 6px}h1{font-weight:400;letter-spacing:.06em;margin:0;font-size:clamp(26px,6vw,40px)}
 .sub{color:var(--muted);font-style:italic;margin-top:4px}
 .bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:10px 16px}
@@ -15,9 +16,9 @@ button:active{transform:translateY(1px)}#lantern{display:none;background:#1f3357
 body.lit #lantern{background:#6f9fd0;color:#0b1020}
 #msg{text-align:center;min-height:1.4em;color:var(--gold);padding:0 16px}
 .wall{display:flex;gap:4vw;justify-content:center;align-items:flex-start;padding:10px 16px;flex-wrap:wrap}
-.shield{position:relative;width:min(44vw,460px);aspect-ratio:696/866;background-size:100% 100%}
+.shield{position:relative;width:min(44vw,480px);aspect-ratio:1;background-size:100% 100%;filter:drop-shadow(0 10px 18px #000c)}
 @media (max-width:700px){.shield{width:min(92vw,460px)}}
-.grid{position:absolute;left:6.897%;top:5.543%;width:86.207%;aspect-ratio:1;display:grid;grid-template-columns:repeat(5,1fr);gap:0}
+.grid{position:absolute;left:18.75%;top:18.75%;width:62.5%;aspect-ratio:1;display:grid;grid-template-columns:repeat(5,1fr);gap:0}
 .slot{position:relative;aspect-ratio:1;outline:1px solid rgba(0,0,0,.35)}
 .slot.sel{outline:2px solid var(--gold);z-index:2}
 .tile{width:100%;height:100%;display:block;touch-action:none;user-select:none;-webkit-user-drag:none;cursor:grab}
@@ -28,15 +29,16 @@ h2{font-weight:400;text-align:center;margin:18px 0 4px;font-size:22px}
 .drag{position:fixed;pointer-events:none;z-index:50;opacity:.9;box-shadow:0 6px 18px #000a}
 #done{display:none;text-align:center;font-size:20px;color:#cfe8ff;padding:10px 16px}
 footer{text-align:center;color:var(--muted);font-size:14px;padding:0 16px 24px}
+header,.bar,#msg,h2,#done,footer{text-shadow:0 1px 3px #000,0 0 14px #000}
 footer button{font-size:14px;padding:4px 10px;background:transparent}
-</style></head><body>
-<header><h1>The Shield Wall</h1><div class="sub">Two shields. Fifty tiles. Only one way they fit.</div></header>
+</style></head><body><div id="bg"></div>
+<header><h1>The Shield Wall</h1><div class="sub">Two seals. Fifty tiles. Only one way they fit.</div></header>
 <div class="bar"><input id="pw" placeholder="Password" autocomplete="off" autocapitalize="characters"><button id="go">Unlock</button><button id="lantern">Moonlight lantern</button></div>
 <div id="msg"></div>
 <div class="wall"><div class="shield" id="shA"><div class="grid" id="gA"></div></div><div class="shield" id="shB"><div class="grid" id="gB"></div></div></div>
 <div id="done"></div>
 <h2>Your tiles</h2><div id="tray"></div>
-<footer>Drag a tile onto a shield, or tap a tile and then tap a square. Drag it back down to the tiles to remove it.<br><br><button id="reset">Clear the wall</button></footer>
+<footer>Drag a tile onto a seal, or tap a tile and then tap a square. Drag it back down to the tiles to remove it.<br><br><button id="reset">Clear the wall</button></footer>
 <script>
 const CFG={
  "stages": [
@@ -116,7 +118,7 @@ const CFG={
    "lantern": true
   }
  ],
- "solved": "The shields blaze with moonlight. Deep inside the wall, something heavy turns and unlocks."
+ "solved": "The seals blaze with moonlight. Deep inside the wall, something heavy turns and unlocks."
 };const IDS={"1": "992ed5792e", "2": "0052fdd94a", "3": "031c293b2e", "4": "f21c399cac", "5": "5140e22c30", "6": "4da5b5c53f", "7": "f1c628a1cc", "8": "647c07e8d0", "9": "ccd10d0ecf", "10": "48bf2b4e0b", "11": "d56ae693d7", "12": "1e5e6ec768", "13": "9352c4325f", "14": "5a6d253fee", "15": "c871b290c8", "16": "0bba03c896", "17": "2ceb1c71bf", "18": "1eb548d2e8", "19": "285a03eb83", "20": "bcd3659ea2", "21": "ef72b6da0e", "22": "0bb93d354a", "23": "fe862dfd2f", "24": "3f09b160a7", "25": "ae7cbd95ba", "26": "0476953f1b", "27": "830c46d44a", "28": "3fc943e08a", "29": "ad44eb0ad7", "30": "75abbd2a44", "31": "e4203ed658", "32": "ad0c42b3a5", "33": "5dc627885e", "34": "ee791c289d", "35": "250349047b", "36": "bf2410f210", "37": "4c631070ce", "38": "565d81223a", "39": "3c199d5a49", "40": "7063387b21", "41": "151ab80e3f", "42": "d7052cb816", "43": "f2d3ad8084", "44": "6910fff3af", "45": "b9cbff9f58", "46": "17963a0aac", "47": "e2e0e51d0e", "48": "b6e236fa1e", "49": "5b05b355b5", "50": "5b33781bc6"};
 const norm=s=>s.toUpperCase().replace(/[^A-Z0-9]/g,'');
 let st={unlocked:[],place:{},lit:false};
@@ -129,7 +131,7 @@ function img(k){const e=document.createElement('img');e.className='tile';e.dragg
 function render(){
   document.querySelectorAll('.drag').forEach(x=>x.remove());
   document.body.classList.toggle('lit',st.lit);$('lantern').style.display=hasLantern()?'inline-block':'none';
-  $('shA').style.backgroundImage=`url(shieldA${st.lit?'l':''}.webp)`;$('shB').style.backgroundImage=`url(shieldB${st.lit?'l':''}.webp)`;
+  $('shA').style.backgroundImage=`url(${st.lit?'discAl':'disc'}.webp)`;$('shB').style.backgroundImage=`url(${st.lit?'discBl':'disc'}.webp)`;
   for(const s of 'AB'){const g=$('g'+s);g.innerHTML='';for(let i=0;i<25;i++){const d=document.createElement('div');d.className='slot';d.dataset.slot=s+i;
     const k=Object.keys(st.place).find(k=>st.place[k]===s+i);if(k&&owned().includes(+k))d.appendChild(img(k));
     d.onclick=()=>{if(sel){put(sel,s+i)}};g.appendChild(d)}}
