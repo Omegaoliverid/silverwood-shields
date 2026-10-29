@@ -34,7 +34,11 @@ header,.bar,#msg,h2,#done,footer{text-shadow:0 1px 3px #000,0 0 14px #000}
 #ws{display:none;max-width:640px;margin:10px auto 20px;padding:14px 16px;background:rgba(12,14,22,.82);border:1px solid #8a6c3a;border-radius:10px;text-align:center}
 #ws h2{margin:4px 0 6px}#ws .hint{font-style:italic;color:#d8c9a6;margin-bottom:10px}
 #wsg{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;user-select:none;touch-action:manipulation}
-#wsg div{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:clamp(15px,4.2vw,24px);background:rgba(240,228,200,.08);border-radius:4px;cursor:pointer;color:#eadfc8}
+#wsg div{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:clamp(15px,4.2vw,24px);background:rgba(240,228,200,.08);border-radius:4px;color:#eadfc8}
+#wsin{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin:12px 0 6px}
+#wsin input{width:100%;font-size:16px;text-align:center}
+#wsin input.ok{background:#c9a25a;color:#1a140c;border-color:#c9a25a}
+#wsmsg div{margin:3px 0}
 #wsg div.start{background:#6f9fd0;color:#0b1020}
 #wsg div.god{background:#c9a25a;color:#1a140c;font-weight:600}
 #wsg div.herr{background:rgba(120,110,100,.35);color:#9a8f80}
@@ -48,8 +52,8 @@ footer button{font-size:14px;padding:4px 10px;background:transparent}
 <div class="wall"><div class="shield" id="shA"><div class="grid" id="gA"></div></div><div class="shield" id="shB"><div class="grid" id="gB"></div></div></div>
 <div id="done"></div>
 <div id="ws"><h2>The words in the stone</h2>
-<div class="hint">Five names are carved into the stone: the four the seals hold, and the one who holds them in balance. Names read across, up, down or diagonally, never backwards. Tap the first letter of a name, then the last.</div>
-<div id="wsg"></div><div id="wsmsg"></div><div id="wscount"></div><div id="wsend">The wall grinds aside. A narrow stair leads down into the dark: the way to the Crypt of the Founders.</div></div>
+<div class="hint">Five names are carved into the stone: the four the seals hold, and the one who holds them in balance. Names read across, up, down or diagonally, never backwards. Speak the names to the wall: write them in the stones below and submit.</div>
+<div id="wsg"></div><div id="wsin"></div><button id="wssub">Speak the names</button><div id="wsmsg"></div><div id="wscount"></div><div id="wsend">The wall grinds aside. A narrow stair leads down into the dark: the way to the Crypt of the Founders.</div></div>
 <h2>Your tiles</h2><div id="tray"></div>
 <footer>Drag a tile onto a seal, or tap a tile and then tap a square. Drag it back down to the tiles to remove it.<br><br><button id="reset">Clear the wall</button></footer>
 <script>
@@ -177,33 +181,36 @@ function unlock(){const p=norm($('pw').value);const i=CFG.stages.findIndex(s=>no
   st.unlocked.push(i);save();$('pw').value='';
   const s=CFG.stages[i];$('msg').textContent=`${s.name}: ${s.tiles.length} tiles added.`+(s.lantern?' A moonlight lantern flickers into your hands.':'');render()}
 $('go').onclick=unlock;$('pw').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});
-$('lantern').onclick=()=>{st.lit=!st.lit;save();render()};
+$('lantern').onclick=()=>{if(Date.now()<lanternOut){$('msg').textContent='The lantern will not relight yet.';return}st.lit=!st.lit;save();render()};
 $('reset').onclick=()=>{st.place={};save();render()};
 
 const WS={"grid": ["SNIOSTCDOTON", "REEASYEOPAEN", "VDLOROLYTHCH", "OOTOVCRVTRTA", "RARTNCVAAESL", "DVEARCRSCROA", "EAVVVOLDADAR", "RRLORAOSLRHD", "IIIEAARODACN", "DSSCRNSORGCY", "RENTROPYIOUL", "AACUEERCSNLE"], "gods": ["ORAVARO", "ELYNDRA", "AVARIS", "CALDRIS", "ORATHEN"], "herrings": ["NHAL", "SYLVARA", "ORDER", "CHAOS", "ENTROPY", "CRYPT", "DRAGON", "SILVER"], "place": {"ORAVARO": [[3, 1], [4, 2], [5, 3], [6, 4], [7, 5], [8, 6], [9, 7]], "ELYNDRA": [[11, 11], [10, 11], [9, 11], [8, 11], [7, 11], [6, 11], [5, 11]], "CALDRIS": [[5, 8], [6, 8], [7, 8], [8, 8], [9, 8], [10, 8], [11, 8]], "ORATHEN": [[6, 5], [5, 6], [4, 7], [3, 8], [2, 9], [1, 10], [0, 11]], "SYLVARA": [[0, 4], [1, 5], [2, 6], [3, 7], [4, 8], [5, 9], [6, 10]], "ENTROPY": [[10, 1], [10, 2], [10, 3], [10, 4], [10, 5], [10, 6], [10, 7]], "AVARIS": [[4, 1], [5, 1], [6, 1], [7, 1], [8, 1], [9, 1]], "DRAGON": [[6, 9], [7, 9], [8, 9], [9, 9], [10, 9], [11, 9]], "SILVER": [[9, 2], [8, 2], [7, 2], [6, 2], [5, 2], [4, 2]], "ORDER": [[3, 0], [4, 0], [5, 0], [6, 0], [7, 0]], "CHAOS": [[8, 10], [7, 10], [6, 10], [5, 10], [4, 10]], "CRYPT": [[4, 5], [3, 6], [2, 7], [1, 8], [0, 9]], "NHAL": [[1, 11], [2, 11], [3, 11], [4, 11]]}};
-let wsStart=null;
+const CONSEQ={NHAL:'The Void answers. Cold darkness swallows the light, and the moonlight lantern gutters out for a minute.',
+ SYLVARA:'Wrong god. Thorny roots crack from the mortar and lash the speaker.',
+ ORDER:'Oravaro\'s knot flares white and the wall pushes back.',CHAOS:'Avaris\'s weave flares and the wall pushes back.',ENTROPY:'Caldris\'s knot frays, the stone crumbles under your hands, and the wall pushes back.',
+ CRYPT:'The stone stays silent.',DRAGON:'The stone stays silent.',SILVER:'The stone stays silent.'};
+let lanternOut=0;
 function wsRender(){
   const solved=$('done').style.display==='block';$('ws').style.display=solved?'block':'none';if(!solved)return;
-  st.ws=st.ws||[];const g=$('wsg');g.innerHTML='';
-  const mark={};st.ws.forEach(w=>(WS.place[w]||[]).forEach(([r,c])=>{mark[r+','+c]=WS.gods.includes(w)?'god':(mark[r+','+c]||'herr')}));
-  WS.grid.forEach((row,r)=>[...row].forEach((ch,c)=>{const d=document.createElement('div');d.textContent=ch;
-    const m=mark[r+','+c];if(m)d.className=m;if(wsStart&&wsStart[0]===r&&wsStart[1]===c)d.className='start';
-    d.onclick=()=>wsTap(r,c);g.appendChild(d)}));
-  const n=WS.gods.filter(w=>st.ws.includes(w)).length;$('wscount').textContent=`Names spoken: ${n} of 5`;
+  st.ws=(st.ws||[]).filter(w=>WS.gods.includes(w));
+  const g=$('wsg');g.innerHTML='';WS.grid.forEach(row=>[...row].forEach(ch=>{const d=document.createElement('div');d.textContent=ch;g.appendChild(d)}));
+  const box=$('wsin');const keep=[...box.querySelectorAll('input')].map(i=>i.disabled?'':i.value);box.innerHTML='';
+  for(let i=0;i<5;i++){const e=document.createElement('input');e.autocomplete='off';e.setAttribute('autocapitalize','characters');
+    if(st.ws[i]){e.value=st.ws[i];e.disabled=true;e.className='ok'}else{e.value=keep[i]||'';e.placeholder='?'}
+    e.addEventListener('keydown',ev=>{if(ev.key==='Enter')wsSubmit()});box.appendChild(e)}
+  const n=st.ws.length;$('wscount').textContent=`Names spoken: ${n} of 5`;$('wssub').style.display=n===5?'none':'inline-block';
   $('wsend').style.display=n===5?'block':'none';
 }
-function wsTap(r,c){
-  if(!wsStart){wsStart=[r,c];$('wsmsg').textContent='';wsRender();return}
-  const [r0,c0]=wsStart;wsStart=null;const dr=Math.sign(r-r0),dc=Math.sign(c-c0),len=Math.max(Math.abs(r-r0),Math.abs(c-c0))+1;
-  if(!(r0===r||c0===c||Math.abs(r-r0)===Math.abs(c-c0))||len<2){$('wsmsg').textContent='Letters must run in a straight line.';wsRender();return}
-  let w='';for(let i=0;i<len;i++)w+=WS.grid[r0+dr*i][c0+dc*i];
-  const rev=[...w].reverse().join('');const hit=[...WS.gods,...WS.herrings].find(x=>x===w||x===rev);
-  st.ws=st.ws||[];
-  if(hit&&!st.ws.includes(hit)){st.ws.push(hit);save()}
-  if(hit&&WS.gods.includes(hit))$('wsmsg').textContent=`${hit[0]+hit.slice(1).toLowerCase()}: the seal hums and the letters burn gold.`;
-  else if(hit)$('wsmsg').textContent=`${hit[0]+hit.slice(1).toLowerCase()}: the stone stays silent.`;
-  else $('wsmsg').textContent='Nothing happens.';
-  wsRender();
+function wsSubmit(){
+  const msgs=[];st.ws=st.ws||[];
+  [...$('wsin').querySelectorAll('input')].forEach(e=>{if(e.disabled)return;const w=norm(e.value);if(!w)return;
+    if(WS.gods.includes(w)&&!st.ws.includes(w)){st.ws.push(w);msgs.push(`${w[0]+w.slice(1).toLowerCase()}: the letters burn gold and lock into the stone.`)}
+    else if(st.ws.includes(w)){msgs.push(`${w[0]+w.slice(1).toLowerCase()} has already been spoken.`)}
+    else if(CONSEQ[w]){msgs.push(`${w[0]+w.slice(1).toLowerCase()}: ${CONSEQ[w]}`);if(w==='NHAL'&&st.lit){st.lit=false;lanternOut=Date.now()+60000;render()}}
+    else msgs.push(`${e.value.trim()}: nothing happens.`);
+    e.value=''});
+  save();$('wsmsg').innerHTML=msgs.map(m=>`<div>${m.replace(/</g,'&lt;')}</div>`).join('');wsRender();
 }
+$('wssub').onclick=wsSubmit;
 render();wsRender();
 </script></body></html>
