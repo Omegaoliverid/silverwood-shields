@@ -58,7 +58,7 @@ footer button{font-size:14px;padding:4px 10px;background:transparent}
 <div id="done"></div>
 <div id="wsov"><div id="ws"><button id="wsx">Close</button><h2>The words in the stone</h2>
 <div class="hint">Five names are carved into the stone: the four the seals hold, and the one who holds them in balance. Names read across, up, down or diagonally, never backwards. Speak the names to the wall: write them in the stones below and submit.</div>
-<div id="wsg"></div><div id="wsin"></div><button id="wssub">Speak the names</button><div id="wsmsg"></div><div id="wscount"></div><div id="wsend">The wall grinds aside. A narrow stair leads down into the dark: the way to the Crypt of the Founders.</div></div></div>
+<div id="wsg"></div><div id="wsin"></div><button id="wssub">Speak the names</button><div id="wsmsg"></div><div id="wscount"></div><div id="wsend">The wall grinds aside. A narrow stair leads up into the dark: the way to the Crypt of the Founders.</div></div></div>
 <div style="text-align:center"><button id="wsopen">Read the words in the stone</button></div>
 <h2>Your tiles</h2><div id="tray"></div>
 <footer>Drag a tile onto a seal, or tap a tile and then tap a square. Drag it back down to the tiles to remove it.<br><br><button id="reset">Clear the wall</button></footer>
@@ -66,41 +66,41 @@ footer button{font-size:14px;padding:4px 10px;background:transparent}
 const CFG={
  "stages": [
   {
-   "name": "The Raven Job",
+   "name": "Rook's Nest",
    "password": "BLACKFEATHER",
    "tiles": [
     4,
-    5,
     7,
-    8,
     17,
-    19,
-    26,
-    27,
     32,
-    33,
-    37,
     48
    ]
   },
   {
-   "name": "The Search of the Catacombs",
+   "name": "The Catacomb Floor",
    "password": "RESTLESSBONES",
    "tiles": [
     1,
-    2,
-    14,
     15,
-    16,
-    18,
     21,
-    24,
-    28,
     38,
-    44,
-    45,
-    47,
-    50
+    45
+   ]
+  },
+  {
+   "name": "The Guild Archives",
+   "password": "KEEPSAKE",
+   "tiles": [
+    2,
+    5,
+    8,
+    14,
+    19,
+    26,
+    27,
+    33,
+    37,
+    44
    ]
   },
   {
@@ -109,22 +109,34 @@ const CFG={
    "tiles": [
     6,
     9,
-    10,
     23,
     29,
-    30,
     31,
     34,
-    35,
     36,
     39,
     41,
-    42,
     43
    ]
   },
   {
-   "name": "Lysander's Hut",
+   "name": "The Hallowed Halls",
+   "password": "TURNINGSCALES",
+   "tiles": [
+    10,
+    16,
+    18,
+    24,
+    28,
+    30,
+    35,
+    42,
+    47,
+    50
+   ]
+  },
+  {
+   "name": "Lysander's House",
    "password": "MOONWILLOW",
    "tiles": [
     3,
@@ -145,8 +157,8 @@ const CFG={
 };const IDS={"1": "992ed5792e", "2": "0052fdd94a", "3": "031c293b2e", "4": "f21c399cac", "5": "5140e22c30", "6": "4da5b5c53f", "7": "f1c628a1cc", "8": "647c07e8d0", "9": "ccd10d0ecf", "10": "48bf2b4e0b", "11": "d56ae693d7", "12": "1e5e6ec768", "13": "9352c4325f", "14": "5a6d253fee", "15": "c871b290c8", "16": "0bba03c896", "17": "2ceb1c71bf", "18": "1eb548d2e8", "19": "285a03eb83", "20": "bcd3659ea2", "21": "ef72b6da0e", "22": "0bb93d354a", "23": "fe862dfd2f", "24": "3f09b160a7", "25": "ae7cbd95ba", "26": "0476953f1b", "27": "830c46d44a", "28": "3fc943e08a", "29": "ad44eb0ad7", "30": "75abbd2a44", "31": "e4203ed658", "32": "ad0c42b3a5", "33": "5dc627885e", "34": "ee791c289d", "35": "250349047b", "36": "bf2410f210", "37": "4c631070ce", "38": "565d81223a", "39": "3c199d5a49", "40": "7063387b21", "41": "151ab80e3f", "42": "d7052cb816", "43": "f2d3ad8084", "44": "6910fff3af", "45": "b9cbff9f58", "46": "17963a0aac", "47": "e2e0e51d0e", "48": "b6e236fa1e", "49": "5b05b355b5", "50": "5b33781bc6"};
 const norm=s=>s.toUpperCase().replace(/[^A-Z0-9]/g,'');
 let st={unlocked:[],place:{},lit:false};
-try{const s=JSON.parse(localStorage.getItem('shieldwall')||'null');if(s)st=Object.assign(st,s)}catch(e){}
-const save=()=>{try{localStorage.setItem('shieldwall',JSON.stringify(st))}catch(e){}};
+try{const s=JSON.parse(localStorage.getItem('shieldwall-v2')||'null');if(s)st=Object.assign(st,s)}catch(e){}
+const save=()=>{try{localStorage.setItem('shieldwall-v2',JSON.stringify(st))}catch(e){}};
 const $=id=>document.getElementById(id);let sel=null;
 function owned(){let t=[];CFG.stages.forEach((s,i)=>{if(st.unlocked.includes(i))t=t.concat(s.tiles)});return t}
 function hasLantern(){return CFG.stages.some((s,i)=>s.lantern&&st.unlocked.includes(i))}
